@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('./../db');
+const { v4: uuidv4 } = require('uuid');
 
 router.route('/seats').get((req, res) => {
     res.json(db.seats);
@@ -17,9 +18,14 @@ router.route('/seats/:id').get((req, res) => {
 });
 
 router.route('/seats').post((req, res) => {
-    const { author, text } = req.body;
-    if(author && text) {
-        db.seats.push({ id: uuidv4(), author: author, text: text });
+    const { day, seat, client, email } = req.body;
+
+    const dayNumber = parseInt(day);
+    const seatNumber = parseInt(seat);
+    if (db.seats.some(seat => seat.day === dayNumber && seat.seat === seatNumber)) {
+        return res.json({ message: 'The slot is already taken...' });
+    } else if(day && seat && client && email) {
+        db.seats.push({ id: uuidv4(), day: dayNumber, seat: seatNumber, client: client, email: email });
         res.json({ message: 'OK' });
     } else {
         res.json({ message: 'wrong data' });
@@ -28,11 +34,13 @@ router.route('/seats').post((req, res) => {
 
 router.route('/seats/:id').put((req, res) => {
     const dataId = parseInt(req.params.id);
-    const { author, text } = req.body;
+    const { day, seat, client, email } = req.body;
     const data = db.seats.find((seat) => seat.id === dataId);
     if (data) {
-        data.author = author;
-        data.text = text;
+        data.day = day;
+        data.seat = seat;
+        data.client = client;
+        data.email = email;
         res.json({ message: 'OK' });
     } else {
         res.json({ message: 'wrong ID' });
