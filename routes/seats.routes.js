@@ -26,7 +26,8 @@ router.route('/seats').post((req, res) => {
         return res.json({ message: 'The slot is already taken...' });
     } else if(day && seat && client && email) {
         db.seats.push({ id: uuidv4(), day: dayNumber, seat: seatNumber, client: client, email: email });
-        res.json({ message: 'OK' });
+        req.io.emit('seatsUpdated', db.seats);
+        res.json({ message: 'OK' });   
     } else {
         res.json({ message: 'wrong data' });
     }
