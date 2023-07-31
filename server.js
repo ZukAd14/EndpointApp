@@ -4,11 +4,12 @@ const cors = require('cors');
 const socket = require('socket.io');
 const mongoose = require('mongoose');
 
-const app = express();
 
 const testimonialsRoutes = require('./routes/testimonials.routes');
 const concertsRoutes = require('./routes/concerts.routes');
 const seatsRoutes = require('./routes/seats.routes');
+
+const app = express();
 
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
@@ -30,7 +31,14 @@ app.use((req, res) => {
     res.status(404).json({ message: 'Not found...' });
 })
 
-mongoose.connect('mongodb+srv://AdminxD:kurkawodna@cluster0.sdxou7a.mongodb.net/NewWaveDB?retryWrites=true&w=majority', { useNewUrlParser: true });
+const NODE_ENV = process.env.NODE_ENV;
+let dbUri = '';
+
+if(NODE_ENV === 'production') dbUri = 'url to remote db';
+else if(NODE_ENV === 'test') dbUri = 'mongodb://localhost:27017/newWaveDBtest';
+else dbUri = 'mongodb+srv://AdminxD:kurkawodna@cluster0.sdxou7a.mongodb.net/NewWaveDB?retryWrites=true&w=majority';
+
+mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 
 db.once('open', () => {
@@ -48,3 +56,5 @@ io.on('connection', (socket) => {
     console.log('New socket!');
     console.log('New client! Its id – ' + socket.id);
 });
+
+module.exports = server;
