@@ -3,6 +3,7 @@ const path = require('path');
 const cors = require('cors');
 const socket = require('socket.io');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 
 
 const testimonialsRoutes = require('./routes/testimonials.routes');
@@ -14,15 +15,16 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(helmet());
 
 app.use(express.static(path.join(__dirname, '/client/build')));
 
 const NODE_ENV = process.env.NODE_ENV;
 let dbUri = '';
 
-if (NODE_ENV === 'production') dbUri = 'mongodb+srv://AdminxD:${process.env.DB_PASS}@cluster0.sdxou7a.mongodb.net/NewWaveDB?retryWrites=true&w=majority';
-else if (NODE_ENV === 'test') dbUri = 'mongodb://localhost:27017/newWaveDBtest';
-else dbUri = 'mongodb://localhost:27017/NewWaveDB';
+if (NODE_ENV === 'production') dbUri = `mongodb+srv://AdminxD:${process.env.DB_PASS}@cluster0.sdxou7a.mongodb.net/NewVaweDB?retryWrites=true&w=majority`;
+else if (NODE_ENV === 'test') dbUri = 'mongodb://localhost:27017/newVaweeDBtest';
+else dbUri = 'mongodb://localhost:27017/NewVaweDB';
 
 mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
